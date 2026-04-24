@@ -4,7 +4,7 @@ RebustIShip Agent is designed to connect to your local LLM (openai endpoint), an
 ```bash
 rebustIship/
 ├── .env                 # Fill this in for HF
-├── agent.py              # Main agent script
+├── ris_agent.py          # Main agent script
 ├── requirements.txt      # Dependencies
 ├── README.md            # Documentation
 ├── LICENSE              # Apache License
@@ -23,10 +23,10 @@ Option B: Run your personal server through custom scripts, or other means (using
 
 ```bash
 # Interactive mode (recommended)
-python agent.py --apply --run --interactive
+python ris_agent.py --apply --run --interactive
 
 # One-shot mode
-python agent.py --prompt "Create a Python script to organize my Downloads folder" --apply --run
+python ris_agent.py --prompt "Create a Python script to organize my Downloads folder" --apply --run
 ```
 
 # Commands (Interactive Mode)
@@ -45,21 +45,21 @@ python agent.py --prompt "Create a Python script to organize my Downloads folder
 # Configuration
 ```
 # Basic usage with Ollama
-python agent.py \
+python ris_agent.py \
   --base-url http://localhost:11434/v1 \
   --model qwen2.5-coder:7b \
   --cpu-model google/gemma-4-E4B-it \
   --interactive
 
 # With custom CPU model
-python agent.py \
+python ris_agent.py \
   --base-url http://localhost:8000/v1 \
   --model Qwen/Qwen2.5-Coder-7B \
   --cpu-model google/gemma-4-E4B-it \
   --apply --run --interactive
 
 # Auto-execute mode (skip confirmations - careful!)
-python agent.py --apply --run --yes --interactive
+python ris_agent.py --apply --run --yes --interactive
 ```
 
 # Arguments
