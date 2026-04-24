@@ -856,7 +856,7 @@ def interactive_loop(cpu_model, args, root, fix_memory):
 def main() -> int:
     parser = argparse.ArgumentParser(description="robustIship - Local agent: GPU server + CPU brain")
     parser.add_argument("--base-url", default="http://127.0.0.1:8000/v1", help="GPU server URL (Qwen)")
-    parser.add_argument("--model", default="qwen/Qwen2.5-Coder-7B-Instruct", help="Main model on server")
+    parser.add_argument("--model", default="Qwen/Qwen2.5-Coder-7B-Instruct", help="Main model on server")
     parser.add_argument("--cpu-model", default="google/gemma-4-E4B-it", help="CPU model for planning/validation")
     parser.add_argument("--cpu-model-max-memory-gib", type=float, default=8.0, help="RAM limit for CPU model")
     parser.add_argument("--max-tokens", type=int, default=512)
