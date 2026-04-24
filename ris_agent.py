@@ -737,7 +737,7 @@ def interactive_loop(cpu_model, args, root, fix_memory):
                     return
                 elif confirm_action == "syntax" and last_file:
                     # Try common Python interpreters with fixes applied
-                    for python_cmd in ["/opt/rocm-venv/bin/python", "/opt/rocm-venv/bin/python3", "python3", "python"]:
+                    for python_cmd in ["python3", "python"]:
                         python_cmd = fix_memory.apply_fixes(python_cmd)
                         result = run_command(root, f"{python_cmd} -m py_compile {last_file}", timeout_s=30)
                         if result["ok"]:
