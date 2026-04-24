@@ -2,7 +2,7 @@
 
 #!/usr/bin/env python3
 """
-rebustIship - Local CLI agent with:
+robustIship - Local CLI agent with:
 - Qwen on GPU server (heavy generation)
 - Gemma on CPU (planning, validation, error recovery)
 - Interactive mode with smart error recovery
@@ -39,9 +39,9 @@ class FixMemory:
         self.load_from_file()
     
     def load_from_file(self):
-        """Load saved fixes from ~/.rebustIship_fixes.json"""
+        """Load saved fixes from ~/.robustIship_fixes.json"""
         try:
-            fix_file = Path.home() / ".rebustIship_fixes.json"
+            fix_file = Path.home() / ".robustIship_fixes.json"
             if fix_file.exists():
                 with open(fix_file, "r") as f:
                     data = json.load(f)
@@ -51,9 +51,9 @@ class FixMemory:
             pass
     
     def save_to_file(self):
-        """Save fixes to ~/.rebustIship_fixes.json"""
+        """Save fixes to ~/.robustIship_fixes.json"""
         try:
-            fix_file = Path.home() / ".rebustIship_fixes.json"
+            fix_file = Path.home() / ".robustIship_fixes.json"
             with open(fix_file, "w") as f:
                 json.dump({"command_fixes": self.command_fixes}, f, indent=2)
         except Exception:
@@ -854,7 +854,7 @@ def interactive_loop(cpu_model, args, root, fix_memory):
             continue
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="rebustIship - Local agent: GPU server + CPU brain")
+    parser = argparse.ArgumentParser(description="robustIship - Local agent: GPU server + CPU brain")
     parser.add_argument("--base-url", default="http://127.0.0.1:8000/v1", help="GPU server URL (Qwen)")
     parser.add_argument("--model", default="qwen/Qwen2.5-Coder-7B-Instruct", help="Main model on server")
     parser.add_argument("--cpu-model", default="google/gemma-4-E4B-it", help="CPU model for planning/validation")
@@ -892,7 +892,7 @@ def main() -> int:
         print("⚠️  HF_TOKEN not set; attempting anonymous download.", file=sys.stderr)
 
     print("=" * 60)
-    print("🤖 rebustIship - Local Agent")
+    print("🤖 robustIship - Local Agent")
     print("=" * 60)
     
     # Load CPU model (Gemma)
