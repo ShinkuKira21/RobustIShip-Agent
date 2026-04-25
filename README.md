@@ -1,5 +1,15 @@
-# RobustIShip-Agent
-RobustIShip Agent is designed to connect to your local LLM (openai endpoint), and leverage Gemma-4-E4B model within CPU as a repair layer. (Experimental agent)
+# RobustIShip Agent
+
+RobustIShip Agent is an experimental dual-model agent system designed to make small LLMs reliable.
+
+It connects to your local LLM (OpenAI-compatible endpoint) and uses a CPU-based repair model (Gemma) to:
+- Fix broken JSON outputs
+- Recover from failed commands
+- Continue tasks instead of stalling
+
+This allows models like Qwen 7B to behave more like stable agents instead of fragile generators.
+
+⚠️ Experimental — built for real-world testing, not perfection.
 
 ```bash
 rebustIship/
