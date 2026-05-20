@@ -1,141 +1,231 @@
 # RobustIShip Agent
 
-RobustIShip Agent is an experimental dual-model agent system designed to make small LLMs reliable.
+RobustIShip is a self-healing, dual-model coding agent that runs entirely on your hardware. No API keys. No cloud. No limits.
 
-It connects to your local LLM (OpenAI-compatible endpoint) and uses a CPU-based repair model (Gemma) to:
-- Fix broken JSON outputs
-- Recover from failed commands
-- Continue tasks instead of stalling
+**Qwen generates. Gemma guides. The system heals itself.**
 
-This allows models like Qwen 7B to behave more like stable agents instead of fragile generators.
+---
 
-⚠️ Experimental — built for real-world testing, not perfection.
+## Why RobustIShip?
 
-```bash
-rebustIship/
-├── .env                 # Fill this in for HF
-├── ris_agent.py          # Main agent script
-├── requirements.txt      # Dependencies
-├── README.md            # Documentation
-├── LICENSE              # Apache License
-```
+- **Self-healing**: Failed commands auto-diagnose and retry with targeted fixes
+- **Quality-gated**: Every file scored before writing. Below 8/10? Auto-retries.
+- **TDD Mode**: Tests written first, implementation follows, tests must pass
+- **System Memory**: Learns your environment across projects. Fixes compound over time.
+- **Cross-platform**: Linux, macOS, Windows. Auto-detects your OS, shell, Python path.
+- **Terminal-first**: `/plan`, `/go`, `/fix` — same workflow, more power.
+- **Open models**: Qwen 14B + Gemma 7.9B. Runs on your GPU + CPU.
 
-# 1. Start your LLM server
-Option A: Ollama (easiest) (port 8000 is what the agent looks for)
+---
+
+## Quick Start
 
 ```bash
-ollama run qwen2.5-coder:7b
-```
+# 1. Start your Qwen server (vLLM, Ollama, etc.)
+python run_qwen.py --model Qwen/Qwen2.5-Coder-14B-Instruct --serve --port 8000
 
-Option B: Run your personal server through custom scripts, or other means (using OpenAI Endpoint reinforcement).
-
-# 2. Run the Agent
-
-```bash
-# Interactive mode (recommended)
-python ris_agent.py --apply --run --interactive
-
-# One-shot mode
-python ris_agent.py --prompt "Create a Python script to organize my Downloads folder" --apply --run
-```
-
-# Commands (Interactive Mode)
-
-## Command	Description
-```bash
-/exit	Exit the agent
-/clear	Clear conversation history
-/status	Show memory usage and saved fixes
-/fixes	List all saved command fixes
-/save	Save conversation to JSON file
-/done	Force mark task as complete
-/help	Show this help
-```
-
-# Configuration
-```
-# Basic usage with Ollama
-python ris_agent.py \
-  --base-url http://localhost:11434/v1 \
-  --model qwen2.5-coder:7b \
-  --cpu-model google/gemma-4-E4B-it \
-  --interactive
-
-# With custom CPU model
-python ris_agent.py \
-  --base-url http://localhost:8000/v1 \
-  --model Qwen/Qwen2.5-Coder-7B \
-  --cpu-model google/gemma-4-E4B-it \
+# 2. Run the agent
+python cli.py \
+  --model Qwen/Qwen2.5-Coder-14B-Instruct \
+  --agent-model google/gemma-4-E4B-it \
   --apply --run --interactive
 
-# Auto-execute mode (skip confirmations - careful!)
-python ris_agent.py --apply --run --yes --interactive
+# 3. Plan and execute
+/plan Build a CLI task manager with JSON storage
+/go
 ```
 
-# Arguments
-## Argument	Default	Description
+---
+
+## Features
+
+### Self-Healing Micro Sprints
+Every action goes through: execute → fail? → system cache → Gemma reflection → Qwen retry → succeed.
+
+### TDD Mode (`--tdd`)
+Tests first, implementation follows, tests must pass before advancing. TDD Assembly curates Qwen's best attempts into production-quality tests.
+
+### Quality Gates
+Every file scored 1-10. Below 8? Gemma rewrites the prompt and Qwen tries again. Loop detection triggers TDD Assembly.
+
+### System Memory (`~/.robustIship/`)
+Learns `python` means `python3` on your machine. Remembers that `tree` isn't installed and `find` works instead. Compounds across all projects. No model calls needed after first fix.
+
+### Interactive Mode
+Review every file before it's written. See quality scores. Skip, accept, or defer to Gemma.
+
+---
+
+## Commands
+
+| Command | Description |
+|---------|-------------|
+| `/plan <goal>` | Create structured plan |
+| `/go` | Execute plan |
+| `/run <goal>` | Plan + execute in one command |
+| `/save` | Save state to disk |
+| `/load` | Load previous state |
+| `/status` | Show progress |
+| `/fix` | Analyze failures |
+| `/fixes` | Show saved command fixes |
+| `/clear` | Clear state |
+| `/exit` | Exit |
+
+---
+
+## Flags
+
+### Server & Model
+| Flag | Default | Description |
+|------|---------|-------------|
+| `--base-url` | `http://127.0.0.1:8000/v1` | GPU server URL (Qwen) |
+| `--model` | `Qwen/Qwen2.5-Coder-7B-Instruct` | Main model on GPU server |
+| `--cpu-model` | `google/gemma-4-E4B-it` | Agent model (Gemma) — will be `--agent-model` in v0.27 |
+| `--api-key` | `$MODEL_API_KEY` | API key for the server |
+| `--max-tokens` | `4096` | Max tokens per generation |
+| `--temperature` | `0.2` | Sampling temperature |
+| `--top-p` | `0.95` | Nucleus sampling |
+
+### Agent Model (Gemma)
+| Flag | Default | Description |
+|------|---------|-------------|
+| `--am-device` | `cpu` | Device: `cpu`, `cuda`, or `auto` |
+| `--am-quant` | `fp16` | Quantization: `none`, `4bit`, `8bit`, `fp16` |
+| `--am-max-memory-gib` | `None` | RAM limit for agent model |
+| `--am-max-vram-gib` | `None` | VRAM limit for agent model (GPU) |
+
+### Execution
+| Flag | Default | Description |
+|------|---------|-------------|
+| `--apply` | `False` | Actually write files to disk |
+| `--run` | `False` | Actually execute shell commands |
+| `--yes` | `False` | Skip all confirmations (full auto) |
+| `--max-steps` | `25` | Maximum steps per plan |
+| `--root` | `.` | Workspace root directory |
+| `--prompt` | `None` | One-shot prompt (non-interactive) |
+| `--interactive` | `False` | Force interactive mode |
+
+### Debug & Logging
+| Flag | Default | Description |
+|------|---------|-------------|
+| `--verbose` | `low` | Output level: `low`, `medium`, `high` |
+| `--debug` | `False` | Show raw HTTP responses and quality debug |
+| `--log-output` | `False` | Write model calls to `.robustIship/logs/` |
+| `--review-mode` | `failures-only` | Gemma code review: `off`, `failures-only`, `all` |
+
+### Feature Flags
+| Flag | Description |
+|------|-------------|
+| `--tdd` | Test-driven development mode |
+| `--minimal` | Fast path only, no dual-gen or takeover |
+| `--experimental` | Enable experimental multi-gen features |
+| `--dual-gen` | Force-enable dual generation (Qwen + Gemma parallel) |
+| `--multi-gen` | Force-enable multi generation (3 Qwen + Gemma assembly) |
+| `--no-dual-gen` | Disable dual generation |
+| `--no-pre-flight` | Disable pre-flight test validation |
+| `--no-retry-step` | Disable RETRY_STEP command |
+| `--no-session-filter` | Disable session filtering in history |
+
+### Quality Thresholds
+| Flag | Default | Description |
+|------|---------|-------------|
+| `--dual-gen-threshold` | `6` | Quality score ≤ this triggers dual-gen |
+| `--takeover-threshold` | `2` | Quality score ≤ this triggers Gemma takeover |
+
+### Other
+| Flag | Description |
+|------|-------------|
+| `--version` | Show version and exit |
+| `--clear-fixes` | Clear all saved command fixes on startup |
+
+---
+
+## Configuration Examples
+
 ```bash
---base-url	http://127.0.0.1:8000/v1	GPU server URL
---model	Qwen/Qwen2.5-Coder-7B-Instruct	Main model
---cpu-model	google/gemma-4-E4B-it	CPU validation model
---apply	False	Actually execute file writes
---run	False	Actually execute commands
---yes	False	Auto-confirm all actions
---interactive	False	Start interactive mode
---max-tokens	512	Max generation tokens
---temperature	0.2	Sampling temperature
---verbose	False	Show detailed output
---debug	False	Debug mode with extra logging
+# Basic usage
+python cli.py \
+  --model Qwen/Qwen2.5-Coder-14B-Instruct \
+  --agent-model google/gemma-4-E4B-it \
+  --root ./ProjectLocation/
+
+# TDD mode with verbose output
+python cli.py \
+  --model Qwen/Qwen2.5-Coder-14B-Instruct \
+  --agent-model google/gemma-4-E4B-it \
+  --tdd --verbose high --apply --run --root ./ProjectLocation/
+
+# Minimal mode (fast, no dual-gen)
+python cli.py \
+  --model Qwen/Qwen2.5-Coder-7B-Instruct \
+  --agent-model google/gemma-4-E4B-it \
+  --minimal --apply --run --yes --root ./ProjectLocation/
 ```
 
-# How Fix Memory Works
-## When a command fails, you can provide a natural language fix:
-```bash
-Your choice: c
+---
 
-Tell the CPU brain what to fix:
-Original command: python -m py_compile script.py
-Error: python: not found
+## How Self-Healing Works
 
-Your instruction: use /opt/rocm-venv/bin/python instead
-
-✅ CPU brain fixed: /opt/rocm-venv/bin/python -m py_compile script.py
-💾 Remembered: use '/opt/rocm-venv/bin/python' instead of 'python'
+```
+Qwen generates code → Quality gate scores it 6/10
+  → Gemma reflects: "Missing error handling in storage.py"
+  → Qwen retries with targeted context
+  → Quality gate: 9/10 → Written to workspace
 ```
 
-# Limitations
+---
 
-- **CPU Model Memory**: The agent uses a 4-bit quantized version of Gemma-4-E4B requiring **~5.5-6 GB RAM**. You can swap to smaller models (Gemma-2-2B) or different quantization for less memory usage.
+## How System Memory Works
 
-- **Repair Speed**: May take 5+ minutes if the main model's output is severely malformed. Repairs are highly effective for task continuation, but first-time failures can be slow.
+```
+Step: run_command "tree"
+  → Fails: "tree: command not found"
+  → Gemma: "Use find . -maxdepth 3 | head -80 instead"
+  → Works ✓
+  → Saved to ~/.robustIship/system_fixes.json
+  → Next time: instant, no model call needed
+```
 
-- **Experimental**: Works on my machine™. Your mileage may vary. Test before relying on it for critical tasks.
+---
 
-- **File Reading**: No built-in `read_file` tool. Use system commands (`cat`, `head`, etc.) or add custom tools. Tested on Linux with ROCm.
+## Requirements
 
-# Troubleshooting
-*"python: not found"*
+- **GPU**: Qwen 7B-14B (or any OpenAI-compatible endpoint) - Not Tested/Optimised for Other Models
+- **CPU RAM**: ~6GB for Gemma 4-bit, ~16GB for FP16
+- **Python**: 3.10+
+- **OS**: Linux, macOS, Windows
 
-**Use custom fix: use /full/path/to/python** *or activate your venv first*
+---
 
-*"Connection refused"*
+## Limitations
 
-**Ensure your LLM server is running**
+- Gemma runs on CPU (20-40s per reflection)
+- Dual-gen and multi-gen require GPU for Gemma (untested)
+- Cross-platform testing limited to Linux/ROCm
+- Experimental — test before production use
 
-**Check --base-url matches your server port**
+---
 
-*Agent gets stuck in loop*
+## Troubleshooting
 
-**Type /done to force completion**
+**"python: not found"**
+The agent will auto-detect your Python path. First run may need a retry. Subsequent runs use cached path.
 
-**Use --max-steps 10 to limit iterations**
+**"Connection refused"**
+Ensure your Qwen server is running. Check `--base-url` matches your server port.
 
-# Contributing
-Issues and PRs welcome! This is experimental, so feedback is valuable.
+**Agent gets stuck in a loop**
+Type `/done` to force completion. Use `--max-steps 10` to limit iterations. **|OR|** 
+*CTRL + C, reload the script, type `/load` to load all saved states, and then `/go` to restart!*
 
-# Licence
-Apache 2.0 - Use it, break it, fix it, share it.
+---
 
-# Acknowledgements
-- Built with [https://huggingface.co/docs/transformers/en/index](Transformers)
-- Validated by [https://blog.google/innovation-and-ai/technology/developers-tools/gemma-4/](Gemma)
+## Acknowledgements
+
+Built with [Transformers](https://github.com/huggingface/transformers) and [Gemma](https://ai.google.dev/gemma).
+
+---
+
+## License
+
+Apache 2.0 — Use it, break it, fix it, share it.
