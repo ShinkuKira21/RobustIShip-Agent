@@ -30,7 +30,8 @@ ollama run qwen2.5-coder:7b
 Option B: Run your personal server through custom scripts, or other means (using OpenAI Endpoint reinforcement).
 
 # 2. Run the agent
-python cli.py \
+```bash
+python RobustIShip-Agent/cli.py \
   --model Qwen/Qwen2.5-Coder-14B-Instruct \
   --agent-model google/gemma-4-E4B-it \
   --apply --run --interactive
@@ -149,19 +150,19 @@ Review every file before it's written. See quality scores. Skip, accept, or defe
 
 ```bash
 # Basic usage
-python cli.py \
+python RobustIShip-Agent/cli.py \
   --model Qwen/Qwen2.5-Coder-14B-Instruct \
   --agent-model google/gemma-4-E4B-it \
   --root ./ProjectLocation/
 
 # TDD mode with verbose output
-python cli.py \
+python RobustIShip-Agent/cli.py \
   --model Qwen/Qwen2.5-Coder-14B-Instruct \
   --agent-model google/gemma-4-E4B-it \
   --tdd --verbose high --apply --run --root ./ProjectLocation/
 
 # Minimal mode (fast, no dual-gen)
-python cli.py \
+python RobustIShip-Agent/cli.py \
   --model Qwen/Qwen2.5-Coder-7B-Instruct \
   --agent-model google/gemma-4-E4B-it \
   --minimal --apply --run --yes --root ./ProjectLocation/
