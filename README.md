@@ -20,7 +20,6 @@ RobustIShip is a self-healing, dual-model coding agent that runs entirely on you
 
 ## Quick Start
 
-```bash
 # 1. Start your LLM server
 Option A: Ollama (easiest) (port 8000 is what the agent looks for)
 
