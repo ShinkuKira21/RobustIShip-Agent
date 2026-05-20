@@ -21,8 +21,14 @@ RobustIShip is a self-healing, dual-model coding agent that runs entirely on you
 ## Quick Start
 
 ```bash
-# 1. Start your Qwen server (vLLM, Ollama, etc.)
-python run_qwen.py --model Qwen/Qwen2.5-Coder-14B-Instruct --serve --port 8000
+# 1. Start your LLM server
+Option A: Ollama (easiest) (port 8000 is what the agent looks for)
+
+```bash
+ollama run qwen2.5-coder:7b
+```
+
+Option B: Run your personal server through custom scripts, or other means (using OpenAI Endpoint reinforcement).
 
 # 2. Run the agent
 python cli.py \
